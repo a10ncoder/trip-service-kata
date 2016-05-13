@@ -5,11 +5,20 @@ import org.craftedsw.tripservicekata.trip.TripService;
 import org.craftedsw.tripservicekata.user.User;
 import org.craftedsw.tripservicekata.user.UserSession;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
+import java.util.List;
+
+
 
 public class TripServiceTest {
 	
 	private static final User GUEST = null;
 	private static final User UNUSED_USER = null;
+	private static final User REGISTER_USER = new User();
+	private static final User ANOTHER_USER =  new User();
+	private static final Trip TO_BRAZIL = new Trip();
+	
 	private User loggedInUser;
 	
 	@Test ( expected = UserNotLoggedInException.class )
@@ -22,7 +31,25 @@ public class TripServiceTest {
 		tripService.getTripsByUser( UNUSED_USER );
 		
 	}
+
+	@Test
+	public void  should_not_return_any_trips_when_users_are_not_friends(){
 	
+		TripService tripService = new TestableTripService();
+		
+		loggedInUser = REGISTER_USER;
+		
+		User friend = new User();
+		friend.addFriend( ANOTHER_USER );
+		friend.addTrip( TO_BRAZIL );
+		
+		List< Trip > friendsTrips = tripService.getTripsByUser( friend );
+		
+		org.junit.Assert.assertEquals( friendsTrips.size(), 0 );
+	}
+	
+	
+
 	private class TestableTripService extends TripService{
 		
 		@Override
